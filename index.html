@@ -6,7 +6,7 @@
     <title>AQUARNSHOP</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        @import url('https://fonts.wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
         :root {
             --accent: #FFD700;
@@ -16,7 +16,6 @@
         }
 
         body {
-           
             background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-main);
@@ -26,7 +25,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-      
         body::before {
             content: "";
             position: fixed;
@@ -68,6 +66,27 @@
             line-height: 1.5;
         }
 
+       
+        .channel-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+
+        .channel-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         .container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -76,7 +95,6 @@
         }
 
         .card {
-          
             background: rgba(12, 12, 12, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -136,6 +154,9 @@
         Премиум-магазин цифровых звёзд.<br>
         • Честный курс • Надёжная оплата • 24/7
     </div>
+    <a href="#" class="channel-btn" onclick="tg.openTelegramLink('https://t.me/softnavodka'); return false;">
+        📢 Наш Telegram-канал
+    </a>
 </div>
 
 <div class="container" id="shop-grid"></div>
@@ -147,7 +168,6 @@
     tg.expand();
     tg.ready();
     tg.setHeaderColor('#000000');
-
 
     const user = tg.initDataUnsafe?.user;
     const nameElement = document.getElementById('user-name');
@@ -195,6 +215,4 @@
     });
 </script>
 </body>
-
 </html>
-
