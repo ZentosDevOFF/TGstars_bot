@@ -23,6 +23,7 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Чтобы не было скролла из-за снежинок */
         }
 
         body::before {
@@ -33,9 +34,35 @@
             z-index: -1;
         }
 
+        /* Контейнер для снега */
+        #snow-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* Чтобы можно было кликать сквозь снег */
+            z-index: 10;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            user-select: none;
+            z-index: 10;
+            opacity: 0.8;
+            filter: blur(1px);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(105vh); }
+        }
+
         .header {
             padding: 40px 20px 25px;
             text-align: center;
+            position: relative;
+            z-index: 20;
         }
 
         .user-badge {
@@ -65,7 +92,6 @@
             line-height: 1.5;
         }
 
-       
         .channel-btn {
             display: inline-block;
             margin-top: 15px;
@@ -81,16 +107,15 @@
             transition: all 0.2s ease;
         }
 
-        .channel-btn:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
         .container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             padding: 0 20px 40px;
+            position: relative;
+            z-index: 20;
+            height: calc(100vh - 250px); /* Даем область для скролла товаров */
+            overflow-y: auto;
         }
 
         .card {
@@ -107,23 +132,15 @@
             transition: all 0.2s ease;
         }
 
-        .card:active {
-            transform: scale(0.94);
-            border-color: var(--accent);
-        }
+        .card:active { transform: scale(0.94); border-color: var(--accent); }
 
         .card img {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             margin-bottom: 12px;
             filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
         }
 
-        .stars-count {
-            font-size: 17px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
+        .stars-count { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
 
         .buy-btn {
             background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dark) 100%);
@@ -140,11 +157,13 @@
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            padding-bottom: 50px;
+            padding: 20px 0 50px;
         }
     </style>
 </head>
 <body>
+
+<div id="snow-container"></div>
 
 <div class="header">
     <div class="user-badge">👤 Личный кабинет: <b id="user-name">Загрузка...</b></div>
@@ -159,7 +178,6 @@
 </div>
 
 <div class="container" id="shop-grid"></div>
-
 <div class="footer-note">Курс 1:1</div>
 
 <script>
@@ -168,14 +186,28 @@
     tg.ready();
     tg.setHeaderColor('#000000');
 
+    // UserName
     const user = tg.initDataUnsafe?.user;
     const nameElement = document.getElementById('user-name');
-    if (user) {
-        nameElement.innerText = user.username ? `@${user.username}` : user.first_name;
-    } else {
-        nameElement.innerText = "Гость";
-    }
+    nameElement.innerText = user ? (user.username ? `@${user.username}` : user.first_name) : "Гость";
 
+    // Снег
+    function createSnowflake() {
+        const snow = document.getElementById('snow-container');
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        flake.innerText = '•'; // Можно заменить на '❄', если хочешь снежинки покрупнее
+        flake.style.left = Math.random() * 100 + 'vw';
+        flake.style.animationDuration = Math.random() * 3 + 2 + 's'; // Скорость падения 2-5 сек
+        flake.style.opacity = Math.random();
+        flake.style.fontSize = Math.random() * 10 + 10 + 'px';
+        
+        snow.appendChild(flake);
+        setTimeout(() => { flake.remove(); }, 5000);
+    }
+    setInterval(createSnowflake, 150); // Частота появления
+
+    // Товары
     const items = [
         { name: "50 Stars",   price: "50 ₽",   link: "https://funpay.com/lots/offer?id=63176332" },
         { name: "100 Stars",  price: "100 ₽",  link: "https://funpay.com/lots/offer?id=63179051" },
@@ -195,7 +227,6 @@
     ];
 
     const grid = document.getElementById('shop-grid');
-
     items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
@@ -204,15 +235,12 @@
             <div class="stars-count">${item.name}</div>
             <div class="buy-btn">${item.price}</div>
         `;
-        
         card.onclick = () => {
             tg.HapticFeedback.notificationOccurred('success');
             tg.openLink(item.link);
         };
-        
         grid.appendChild(card);
     });
 </script>
 </body>
 </html>
-
