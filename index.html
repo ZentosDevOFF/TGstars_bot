@@ -15,15 +15,43 @@
             --text-dim: #a0a0a0;
         }
 
+        /* Стиль экрана загрузки */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #loader h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: pulse 1.5s infinite ease-in-out;
+            margin: 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.5; text-shadow: 0 0 0px var(--accent); }
+            50% { transform: scale(1); opacity: 1; text-shadow: 0 0 20px var(--accent); }
+            100% { transform: scale(0.95); opacity: 0.5; text-shadow: 0 0 0px var(--accent); }
+        }
+
         body {
             background: url('bg.jpg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             -webkit-tap-highlight-color: transparent;
-            overflow: hidden; /* Чтобы не было скролла из-за снежинок */
+            overflow: hidden;
         }
 
         body::before {
@@ -34,11 +62,10 @@
             z-index: -1;
         }
 
-        /* Контейнер для снега */
         #snow-container {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* Чтобы можно было кликать сквозь снег */
+            pointer-events: none;
             z-index: 10;
         }
 
@@ -46,7 +73,6 @@
             position: absolute;
             top: -10px;
             color: white;
-            font-size: 1em;
             user-select: none;
             z-index: 10;
             opacity: 0.8;
@@ -54,9 +80,7 @@
             animation: fall linear infinite;
         }
 
-        @keyframes fall {
-            to { transform: translateY(105vh); }
-        }
+        @keyframes fall { to { transform: translateY(105vh); } }
 
         .header {
             padding: 40px 20px 25px;
@@ -114,7 +138,7 @@
             padding: 0 20px 40px;
             position: relative;
             z-index: 20;
-            height: calc(100vh - 250px); /* Даем область для скролла товаров */
+            height: calc(100vh - 250px);
             overflow-y: auto;
         }
 
@@ -163,11 +187,15 @@
 </head>
 <body>
 
+<div id="loader">
+    <h1>AQARNSHOP</h1>
+</div>
+
 <div id="snow-container"></div>
 
 <div class="header">
     <div class="user-badge">👤 Личный кабинет: <b id="user-name">Загрузка...</b></div>
-    <h1>AQUARNSHOP</h1>
+    <h1>AQARNSHOP</h1>
     <div class="description">
         Премиум-магазин цифровых звёзд.<br>
         • Честный курс • Надёжная оплата • 24/7
@@ -186,6 +214,15 @@
     tg.ready();
     tg.setHeaderColor('#000000');
 
+    // Убираем экран загрузки через 1.8 сек
+    window.onload = () => {
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => { loader.style.visibility = 'hidden'; }, 500);
+        }, 1800);
+    };
+
     // UserName
     const user = tg.initDataUnsafe?.user;
     const nameElement = document.getElementById('user-name');
@@ -196,16 +233,15 @@
         const snow = document.getElementById('snow-container');
         const flake = document.createElement('div');
         flake.className = 'snowflake';
-        flake.innerText = '•'; // Можно заменить на '❄', если хочешь снежинки покрупнее
+        flake.innerText = '•';
         flake.style.left = Math.random() * 100 + 'vw';
-        flake.style.animationDuration = Math.random() * 3 + 2 + 's'; // Скорость падения 2-5 сек
+        flake.style.animationDuration = Math.random() * 3 + 2 + 's';
         flake.style.opacity = Math.random();
         flake.style.fontSize = Math.random() * 10 + 10 + 'px';
-        
         snow.appendChild(flake);
         setTimeout(() => { flake.remove(); }, 5000);
     }
-    setInterval(createSnowflake, 150); // Частота появления
+    setInterval(createSnowflake, 150);
 
     // Товары
     const items = [
